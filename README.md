@@ -149,31 +149,5 @@ Recursos disponibles: 2
 
 ---
 
-## **Contribuciones**
-
-Si deseas contribuir a este proyecto, por favor sigue estos pasos:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama para tu funcionalidad:
-   ```bash
-   git checkout -b nueva-funcionalidad
-   ```
-3. Realiza tus cambios y haz un commit:
-   ```bash
-   git commit -m "Descripción de los cambios"
-   ```
-4. Envía tus cambios al repositorio remoto:
-   ```bash
-   git push origin nueva-funcionalidad
-   ```
-5. Abre un Pull Request en este repositorio.
-
----
-
-## **Licencia**
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
-
----
 
 ¡Gracias por usar el Sistema de Emergencias Urbanas! 🚒👮‍♂️🚑
