@@ -61,7 +61,7 @@ public class ConsolaView {
                         ultimaOpcionSeleccionada = 4;
                     }
                     case 5 -> {
-                        System.out.println("Gracias por usar el sistema.");
+                        System.out.println("Gracias por usar el sistema.......");
                         activo = false;
                     }
                     default -> throw new IllegalArgumentException("Opción no válida.");
@@ -88,18 +88,53 @@ public class ConsolaView {
         Emergencia emergencia = EmergenciaFactory.crearEmergencia(tipo, zona, gravedad);
         gestor.registrarEmergencia(emergencia);
         System.out.println("Emergencia registrada: " + emergencia);
+        System.out.println("\n\t<----------------------------------------------------->");
     }
 
     private void atenderEmergencias() {
-        List<String> resultados = gestor.atenderEmergencias(recursos);
+        List<Emergencia> emergenciasRegistradas = gestor.getEmergenciasRegistradas();
 
-        if (resultados.isEmpty()) {
+        if (emergenciasRegistradas.isEmpty()) {
             System.out.println("No hay emergencias registradas para atender.");
             return;
         }
 
-        for (String resultado : resultados) {
-            System.out.println(resultado);
+        while (true) {
+            // Mostrar emergencias registradas
+            System.out.println("\n\t <----------------- Emergencias registradas -------------------->");
+            for (int i = 0; i < emergenciasRegistradas.size(); i++) {
+                System.out.println();
+                System.out.println((i + 1) + ". " + emergenciasRegistradas.get(i));
+            }
+
+            // Preguntar al usuario qué emergencia desea atender
+            int opcion = leerEntero("\nSeleccione el número de la emergencia que desea atender (0 para salir): ");
+
+            if (opcion == 0) {
+                System.out.println("No se atendieron más emergencias.");
+                break;
+            }
+
+            if (opcion < 1 || opcion > emergenciasRegistradas.size()) {
+                System.out.println("Opción inválida. Intente nuevamente.");
+                continue;
+            }
+
+            // Atender la emergencia seleccionada
+            Emergencia emergenciaSeleccionada = emergenciasRegistradas.get(opcion - 1);
+            List<String> resultados = gestor.atenderEmergenciaIndividual(emergenciaSeleccionada, recursos);
+
+            // Mostrar el resultado de la atención
+            resultados.forEach(System.out::println);
+
+            // Eliminar la emergencia atendida de la lista
+            emergenciasRegistradas.remove(emergenciaSeleccionada);
+
+            // Verificar si quedan emergencias por atender
+            if (emergenciasRegistradas.isEmpty()) {
+                System.out.println("Todas las emergencias han sido atendidas.");
+                break;
+            }
         }
     }
 
@@ -203,6 +238,7 @@ public class ConsolaView {
         System.out.print(mensaje);
         return Integer.parseInt(scanner.nextLine());
     }
+
 
     private void esperarEnter() {
         System.out.println("\nPresione ENTER para continuar...");

@@ -10,30 +10,26 @@ import Model.Clases_Concretas.Policia;
 
 public class Main {
     public static void main(String[] args) {
-        try {
-            // Inicializar el controlador de emergencias y recursos
-            GestorEmergencia gestor = new GestorEmergencia();
-            ControladorRecursoSingleton recursos = ControladorRecursoSingleton.getInstancia();
 
-            // Inicializar el mapa urbano con la base de operaciones
-            MapaUrbano mapa = new MapaUrbano(new MapaUrbano.Coordenadas(0, 0)); // Base en (0, 0)
+        // Inicializar el controlador de emergencias y recursos
+        GestorEmergencia gestor = new GestorEmergencia();
+        ControladorRecursoSingleton recursos = ControladorRecursoSingleton.getInstancia();
 
-            // Configurar la estrategia de cercanía
-            gestor.setEstrategia(new EstrategiaPorCercania(mapa));
+        // Inicializar el mapa urbano con la base de operaciones
+        MapaUrbano mapa = new MapaUrbano(new MapaUrbano.Coordenadas(0, 0)); // Base en (0, 0)
 
-            // Registrar servicios disponibles en el sistema
-            recursos.registrarServicio(new Bombero());
-            recursos.registrarServicio(new Policia());
-            recursos.registrarServicio(new Ambulancia());
+        // Configurar la estrategia de cercanía
+        gestor.setEstrategia(new EstrategiaPorCercania(mapa));
 
-            // Crear la vista de consola e iniciar el sistema
-            ConsolaView vista = new ConsolaView(gestor, recursos, mapa);
-            vista.iniciar();
+        // Registrar servicios disponibles en el sistema
+        recursos.registrarServicio(new Bombero());
+        recursos.registrarServicio(new Policia());
+        recursos.registrarServicio(new Ambulancia());
 
-        } catch (Exception e) {
-            System.err.println("Error al iniciar el sistema: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Crear la vista de consola e iniciar el sistema
+        ConsolaView vista = new ConsolaView(gestor, recursos, mapa);
+        vista.iniciar();
+
     }
 
 }
