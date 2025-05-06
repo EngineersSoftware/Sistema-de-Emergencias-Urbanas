@@ -1,0 +1,125 @@
+@startuml
+' Interfaces
+interface IServicioEmergencia {
+  +estaDisponible(): boolean
+  +asignarEmergencia(emergencia: Emergencia)
+  +atenderEmergencia()
+  +getNombreServicio(): String
+  +puedeAtender(tipoEmergencia: TipoEmergencia): boolean
+}
+
+interface EstrategiaPrioridad {
+  +priorizar(emergencias: List<Emergencia>): List<Emergencia>
+}
+
+interface ObservadorEmergencia {
+  +notificar(emergencia: Emergencia)
+}
+
+' Abstract Classes
+abstract class ServicioEmergenciaBase {
+  #disponible: boolean
+  #ubicacionActual: String
+  #emergenciaAsignada: Emergencia
+  +estaDisponible(): boolean
+  +asignarEmergencia(emergencia: Emergencia)
+  +atenderEmergencia()
+  +getNombreServicio(): String
+}
+
+abstract class Emergencia {
+  -ubicacion: String
+  -gravedad: NivelDeGravedad
+  -tipo: TipoEmergencia
+  +getUbicacion(): String
+  +getGravedad(): NivelDeGravedad
+  +getTipo(): TipoEmergencia
+}
+
+' Enums
+enum NivelDeGravedad {
+  BAJA
+  MEDIA
+  ALTA
+}
+
+enum TipoEmergencia {
+  INCENDIO
+  ACCIDENTE_VEHICULAR
+  ROBO
+}
+
+' Concrete Classes
+class Incendio {
+  +Incendio(ubicacion: String, gravedad: NivelDeGravedad)
+}
+
+class Robo {
+  +Robo(ubicacion: String, gravedad: NivelDeGravedad)
+}
+
+class AccidenteVehicular {
+  +AccidenteVehicular(ubicacion: String, gravedad: NivelDeGravedad)
+}
+
+class Bombero {
+  +Bombero()
+}
+
+class Policia {
+  +Policia()
+}
+
+class Ambulancia {
+  +Ambulancia()
+}
+
+class GestorEmergencia {
+  -observadores: List<ObservadorEmergencia>
+  -emergenciasRegistradas: List<Emergencia>
+  -estrategia: EstrategiaPrioridad
+  +registrarEmergencia(emergencia: Emergencia)
+  +atenderEmergenciaIndividual(emergencia: Emergencia): List<String>
+  +priorizarEmergencias(): List<Emergencia>
+}
+
+class ControladorRecursoSingleton {
+  -instancia: ControladorRecursoSingleton
+  -servicios: List<ServicioEmergenciaBase>
+  +{static}getInstancia(): ControladorRecursoSingleton
+  +registrarServicio(servicio: ServicioEmergenciaBase)
+  +getServicios(tipo: TipoEmergencia): List<ServicioEmergenciaBase>
+}
+
+class EmergenciaFactory {
+  +{static}crearEmergencia(tipo: TipoEmergencia, ubicacion: String, gravedad: NivelDeGravedad): Emergencia
+}
+
+class ConsolaView {
+  -gestor: GestorEmergencia
+  -recursos: ControladorRecursoSingleton
+  +iniciar()
+}
+
+' Relationships
+ServicioEmergenciaBase ..|> IServicioEmergencia
+Bombero --|> ServicioEmergenciaBase
+Policia --|> ServicioEmergenciaBase
+Ambulancia --|> ServicioEmergenciaBase
+
+Incendio --|> Emergencia
+Robo --|> Emergencia
+AccidenteVehicular --|> Emergencia
+
+Emergencia --> NivelDeGravedad
+Emergencia --> TipoEmergencia
+
+GestorEmergencia --> EstrategiaPrioridad
+GestorEmergencia --> Emergencia
+GestorEmergencia --> ObservadorEmergencia
+ControladorRecursoSingleton --> ServicioEmergenciaBase
+EmergenciaFactory --> Emergencia
+ConsolaView --> GestorEmergencia
+ConsolaView --> ControladorRecursoSingleton
+
+@enduml
