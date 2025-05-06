@@ -4,6 +4,7 @@ import Controller.Factory.EmergenciaFactory;
 import Controller.Observer.GestorEmergencia;
 import Controller.Singleton.ControladorRecursoSingleton;
 import Model.Emergencia;
+import Model.MapaUrbano;
 import Model.ServicioEmergenciaBase;
 import Model.Enums.NivelDeGravedad;
 import Model.Enums.TipoEmergencia;
@@ -15,11 +16,13 @@ public class ConsolaView {
     private final Scanner scanner = new Scanner(System.in);
     private final GestorEmergencia gestor;
     private final ControladorRecursoSingleton recursos;
+    private final MapaUrbano mapa;
     private int ultimaOpcionSeleccionada = 0;
 
-    public ConsolaView(GestorEmergencia gestor, ControladorRecursoSingleton recursos) {
+    public ConsolaView(GestorEmergencia gestor, ControladorRecursoSingleton recursos, MapaUrbano mapa) {
         this.gestor = gestor;
         this.recursos = recursos;
+        this.mapa = mapa;
     }
 
     public void iniciar() {
@@ -79,10 +82,10 @@ public class ConsolaView {
 
     private void registrarEmergencia() {
         TipoEmergencia tipo = seleccionarTipoEmergencia();
-        String ubicacion = leerTexto("Ingrese la ubicación: ");
+        String zona = seleccionarZona();
         NivelDeGravedad gravedad = seleccionarGravedad();
 
-        Emergencia emergencia = EmergenciaFactory.crearEmergencia(tipo, ubicacion, gravedad);
+        Emergencia emergencia = EmergenciaFactory.crearEmergencia(tipo, zona, gravedad);
         gestor.registrarEmergencia(emergencia);
         System.out.println("Emergencia registrada: " + emergencia);
     }
@@ -98,6 +101,40 @@ public class ConsolaView {
         for (String resultado : resultados) {
             System.out.println(resultado);
         }
+    }
+
+    private String seleccionarZona() {
+        System.out.println("\n\t" + """
+                <------------ Zonas ------------>
+                """);
+        System.out.println("1. Norte");
+        System.out.println("2. Sur");
+        System.out.println("3. Este");
+        System.out.println("4. Oeste");
+        System.out.println("5. Centro");
+
+        int opcion = leerEntero("Seleccione una zona: ");
+        String zona = switch (opcion) {
+            case 1 -> "Norte";
+            case 2 -> "Sur";
+            case 3 -> "Este";
+            case 4 -> "Oeste";
+            case 5 -> "Centro";
+            default -> throw new IllegalArgumentException("Opción inválida.");
+        };
+
+        // Registrar la zona en el mapa si no está registrada
+        if (!mapa.ubicacionRegistrada(zona)) {
+            switch (zona) {
+                case "Norte" -> mapa.registrarUbicacion("Norte", new MapaUrbano.Coordenadas(10, 0));
+                case "Sur" -> mapa.registrarUbicacion("Sur", new MapaUrbano.Coordenadas(-10, 0));
+                case "Este" -> mapa.registrarUbicacion("Este", new MapaUrbano.Coordenadas(0, 10));
+                case "Oeste" -> mapa.registrarUbicacion("Oeste", new MapaUrbano.Coordenadas(0, -10));
+                case "Centro" -> mapa.registrarUbicacion("Centro", new MapaUrbano.Coordenadas(0, 0));
+            }
+        }
+
+        return zona;
     }
 
     private TipoEmergencia seleccionarTipoEmergencia() {
@@ -165,11 +202,6 @@ public class ConsolaView {
     private int leerEntero(String mensaje) {
         System.out.print(mensaje);
         return Integer.parseInt(scanner.nextLine());
-    }
-
-    private String leerTexto(String mensaje) {
-        System.out.print(mensaje);
-        return scanner.nextLine();
     }
 
     private void esperarEnter() {

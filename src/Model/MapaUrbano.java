@@ -35,4 +35,8 @@ public class MapaUrbano {
         }
     }
 
+    public boolean ubicacionRegistrada(String nombre) {
+        return ubicaciones.containsKey(nombre);
+    }
+
 }
